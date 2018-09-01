@@ -1,35 +1,41 @@
 package ru.innopolis.lesson6.myThreads;
 
-import ru.innopolis.lesson6.Main;
-import ru.innopolis.lesson6.Monitor;
+import ru.innopolis.lesson6.SynchroTimer;
+
+import java.util.List;
 
 public class ThreadOneSec extends Thread {
-    Monitor monitor;
 
-    public ThreadOneSec(Monitor monitor){
-        this.monitor = monitor;
+    SynchroTimer synchroTimer;
+    int countSec;
+    List<ThreadTimer> list;
+
+    public ThreadOneSec(SynchroTimer synchroTimer, int countSec, List<ThreadTimer> list) {
+        this.synchroTimer = synchroTimer;
+        this.countSec = countSec;
+        this.list = list;
     }
 
     @Override
     public void run() {
 
         do{
+
             try {
-                Thread.sleep(1000);
+                sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
 
-            synchronized(monitor) {
-                monitor.incrementSec();
-                System.out.println(monitor.getAllSec() + " сек");
-                System.out.println(System.currentTimeMillis() - Main.startTime);
-                monitor.notifyAll();
-            }
+            synchroTimer.incrementSec();
+            System.out.println(synchroTimer.getThisSec() + " сек");
 
+        } while (countSec > synchroTimer.getThisSec());
 
-        }while (true);
-
+        for (ThreadTimer threadTimer : list) {
+            threadTimer.setStopIt(true);
+        }
     }
 
 }
+
